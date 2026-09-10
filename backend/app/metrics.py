@@ -40,15 +40,17 @@ def calculate_irr(cash_flows_with_dates):
     cash_flows_with_dates: list of (date, amount) tuples, sorted by date.
     Contributions should be negative, distributions/NAV positive.
     """
+    if not cash_flows_with_dates:
+        raise ValueError("Cash flows list is empty.")
 
-    def xpnv(rate): 
+    def xnpv(rate):
         t0 = cash_flows_with_dates[0][0]
         return sum(
-            amount / (1 + rate) ** ((date - t0).days / 365)
+            amount / (1 + rate) ** ((d - t0).days / 365)
             for d, amount in cash_flows_with_dates
         )
 
     try:
-        return brentq(xpnv, -0.9999, 10)
+        return brentq(xnpv, -0.9999, 10)
     except ValueError:
         return None

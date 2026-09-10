@@ -1,0 +1,60 @@
+from scipy.optimize import brentq
+
+
+
+
+# Fund: ID, name, vintage_year
+# CashFlowEvent: id, fund_id, date, type (contribution/distribution), amount
+# NAVSnapshot: id, fund_id, date, value
+
+
+# writing straight functions, no DB just using math
+
+
+def calculate_dpi(distributions, contributions):
+
+    """
+    distributions: total distributions to LPs
+    contributions: total contributions from LPs
+    """
+
+    if contributions == 0:
+        return None
+    return distributions / contributions
+
+def calculate_tvpi(distributions, contributions, nav):
+
+    """
+    distributions: total distributions to LPs
+    contributions: total contributions from LPs
+    nav: current net asset value of the fund
+    """
+
+    if contributions == 0:
+        return None
+    return (distributions + nav) / contributions
+
+
+def calculate_irr(cash_flows_with_dates): 
+    """
+    cash_flows_with_dates: list of (date, amount) tuples, sorted by date.
+    Contributions should be negative, distributions/NAV positive.
+    """
+
+    # fail check, returning None if cash_flows_with_dates is empty
+    # also keeping returns consistent with the rest of the codebase
+    
+    if not cash_flows_with_dates:
+        return None
+
+    def xnpv(rate):
+        t0 = cash_flows_with_dates[0][0]
+        return sum(
+            amount / (1 + rate) ** ((d - t0).days / 365)
+            for d, amount in cash_flows_with_dates
+        )
+
+    try:
+        return brentq(xnpv, -0.9999, 10)
+    except ValueError:
+        return None  # IRR not found within the specified range

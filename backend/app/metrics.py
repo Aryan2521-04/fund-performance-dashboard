@@ -1,5 +1,5 @@
 from scipy.optimize import brentq
-from datetime import date
+
 
 
 
@@ -19,7 +19,7 @@ def calculate_dpi(distributions, contributions):
     """
 
     if contributions == 0:
-        return 0
+        return None
     return distributions / contributions
 
 def calculate_tvpi(distributions, contributions, nav):
@@ -31,7 +31,7 @@ def calculate_tvpi(distributions, contributions, nav):
     """
 
     if contributions == 0:
-        return 0
+        return None
     return (distributions + nav) / contributions
 
 
@@ -40,8 +40,12 @@ def calculate_irr(cash_flows_with_dates):
     cash_flows_with_dates: list of (date, amount) tuples, sorted by date.
     Contributions should be negative, distributions/NAV positive.
     """
+
+    # fail check, returning None if cash_flows_with_dates is empty
+    # also keeping returns consistent with the rest of the codebase
+    
     if not cash_flows_with_dates:
-        raise ValueError("Cash flows list is empty.")
+        return None
 
     def xnpv(rate):
         t0 = cash_flows_with_dates[0][0]
@@ -53,4 +57,4 @@ def calculate_irr(cash_flows_with_dates):
     try:
         return brentq(xnpv, -0.9999, 10)
     except ValueError:
-        return None
+        return None  # IRR not found within the specified range

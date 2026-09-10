@@ -34,7 +34,7 @@ def calculate_tvpi(distributions, contributions, nav):
         return 0
     return (distributions + nav) / contributions
 
-## TODO: implement IRR calculation using own newton method clauclator and brentq. 
+
 def calculate_irr(cash_flows_with_dates): 
     """
     cash_flows_with_dates: list of (date, amount) tuples, sorted by date.

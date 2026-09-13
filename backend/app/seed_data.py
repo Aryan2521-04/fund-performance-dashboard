@@ -1,5 +1,5 @@
 from datetime import date
-from backend.app.metrics import calculate_dpi, calculate_tvpi, calculate_irr
+from backend.app.metrics import calculate_dpi, calculate_tvpi, calculate_irr, calculate_irr_with_nav
 
 
 def get_sample_funds():
@@ -85,7 +85,7 @@ if __name__ == "__main__":
             irr_display = "N/A"
         else:
             irr_display = f"{irr:.2%}"
-        print(f"{fund['name']} (vintage {fund['vintage_year']}): DPI={dpi:.2f}, TVPI={tvpi:.2f}, IRR={irr_display}")
+        print(f"{fund['name']} (vintage {fund['vintage_year']}): DPI={dpi:.2f}, TVPI={tvpi:.2f}, IRR={irr_display}, IRR with NAV={calculate_irr_with_nav(fund['cash_flows'], nav, fund['nav_snapshots'][-1][0]):.2%}") 
 
 
 

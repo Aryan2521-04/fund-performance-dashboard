@@ -1,7 +1,7 @@
 import pytest
 from datetime import date
 from pyxirr import xirr
-from app.metrics import calculate_dpi, calculate_tvpi, calculate_irr 
+from app.metrics import calculate_dpi, calculate_tvpi, calculate_irr, calculate_irr_with_nav
 
 # DPI Tests:
 
@@ -58,3 +58,24 @@ def test_irr_all_same_sign():
     cash_flows = [(date(2025, 1, 1), -1000000), (date(2026, 1, 1), -200000)] # all contributions, no distributions
     assert calculate_irr(cash_flows) is None
 
+def test_irr_with_nav():
+    # Same cash flow and nav snapshots as FUND III in seed data
+    cash_flows = [
+        (date(2021, 3, 1), -250000),
+        (date(2021, 10, 1), -150000),
+        (date(2022, 6, 1), -100000),    
+        (date(2023, 11, 1), 120000), 
+    ]
+    nav_snapshots = [
+        (date(2021, 12, 31), 380000),
+        (date(2022, 12, 31), 450000),
+        (date(2023, 12, 31), 400000),
+    ]
+
+    # Calculate IRR using only realized cash flows
+    realized_only_irr = calculate_irr(cash_flows)
+    # Calculate IRR including the latest NAV snapshot as a terminal cash flow
+    since_inception_irr = calculate_irr_with_nav(cash_flows, nav_snapshots[-1][1], nav_snapshots[-1][0])
+    # Check that the IRR including NAV is greater than the realized-only IRR
+    assert since_inception_irr > realized_only_irr
+    assert since_inception_irr > -0.10

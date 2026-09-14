@@ -58,3 +58,16 @@ def calculate_irr(cash_flows_with_dates):
         return brentq(xnpv, -0.9999, 10)
     except ValueError:
         return None  # IRR not found within the specified range
+    
+
+def calculate_irr_with_nav(cash_flows_with_dates, nav, nav_date):
+    """
+    cash_flows_with_dates: list of (date, amount) tuples, sorted by date.
+    Contributions should be negative, distributions/NAV positive.
+    nav: current net asset value of the fund
+    nav_date: date of the NAV snapshot
+    """
+
+    augmented_cash_flows = cash_flows_with_dates + [(nav_date, nav)]
+    augmented_cash_flows.sort()
+    return calculate_irr(augmented_cash_flows)

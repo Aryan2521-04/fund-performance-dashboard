@@ -66,7 +66,12 @@ def calculate_irr_with_nav(cash_flows_with_dates, nav, nav_date):
     Contributions should be negative, distributions/NAV positive.
     nav: current net asset value of the fund
     nav_date: date of the NAV snapshot
+    falls back to realized only irr if nav date is empty
     """
+
+    if nav_date is None:
+        return calculate_irr(cash_flows_with_dates)
+
 
     augmented_cash_flows = cash_flows_with_dates + [(nav_date, nav)]
     augmented_cash_flows.sort()

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from .models import Fund, CashFlowEvent
 from .schemas import CashFlowEventCreate
 

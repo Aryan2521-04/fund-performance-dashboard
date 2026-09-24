@@ -15,10 +15,13 @@ def compute_fund_metrics(fund: Fund) -> tuple[Decimal | None, Decimal | None, fl
     dpi = calculate_dpi(distributions, contributions)
     tvpi = calculate_tvpi(distributions, contributions, nav_value)
 
-    cash_flow_tuples = [(cf.date, cf.amount) for cf in fund.cash_flows]
+    # wrapping .amount in float to let calculations go through, without this calculations will fall through as 
+    # decimal to float calculation isn't allowed
+    cash_flow_tuples = [(cf.date, float(cf.amount)) for cf in fund.cash_flows]
 
     irr = calculate_irr(cash_flow_tuples) 
-    irr_nav = calculate_irr_with_nav(cash_flow_tuples, nav_value, nav_date)
+    # same float wrapping as before, identical reasoning
+    irr_nav = calculate_irr_with_nav(cash_flow_tuples, float(nav_value), nav_date)
 
     return dpi, tvpi, irr, irr_nav
 

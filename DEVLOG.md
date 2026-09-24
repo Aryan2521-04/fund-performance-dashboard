@@ -12,3 +12,13 @@ Re-ran the sanity check to confirm IRR now moves in the same direction as TVPI f
 - Fund II: -3.13% → 5.53% (TVPI 1.18)
 - Fund III: -48.31% → 1.67% (TVPI 1.04)
 - Fund IV: N/A → -7.40%
+
+9/15/26:
+
+While building CashFlowEvent, got stuck on a design decision: should type (contribution/distribution) be stored as its own column, and if so, as a String or an Enum? Initially leaned toward Enum over String, since Enum enforces valid values at the database level since a plain String column would accept any text, including typos or inconsistent casing ("Contribution" vs "contribution"), with no safeguard.
+But Enum only solves part of the problem. Both Fund cash flows already encode direction through the sign of amount (negative = contribution, postive = distribution). Storing type as a separate field, Enum or not, creates redundant data: two fields encoding the same fact, with no guarantee they stay in sync. A row could exist where amount = -50000 but type = DISTRIBUTION, and nothing in the schema would catch that contradiction.
+
+9/24/26:
+
+After completing funds.py and testing the routers, making sure the code was running as intended, during a test session I found a edge case that results in the crash of the app. It's when calculate_irr_with_nav assumes nav_date is always real, so when it gets None when there is no nav_date (as per fallback) it wasn't taught what to do with the None, so it just blindly validates it and appends it, crashing the app. Test cases that I had used didn't cover this, but using mock data while testing helped me uncover some bugs like this one. Easy fix, it was to implemtn a guard within calculate_irr_with_nav, where if nav_date is None, it returns the calculation using the realized irr.
+Additonally found another bug where there was a decimal / float division mismatch between ORM data and pure math functions, so I put float wrapper in certain values within fund_service.py where it was needed, such as cf.amount and nav_value.

@@ -79,3 +79,23 @@ def test_irr_with_nav():
     # Check that the IRR including NAV is greater than the realized-only IRR
     assert since_inception_irr > realized_only_irr
     assert since_inception_irr > -0.10
+
+
+def test_irr_with_no_nav_date():
+
+
+   # Same cash flow as FUND III in seed data
+   cash_flows = [
+        (date(2021, 3, 1), -250000),
+        (date(2021, 10, 1), -150000),
+        (date(2022, 6, 1), -100000),    
+        (date(2023, 11, 1), 120000), 
+    ]
+   
+   realized_only =  calculate_irr(cash_flows)
+   fallback_result = calculate_irr_with_nav(cash_flows, nav=0, nav_date=None)
+
+   assert realized_only == fallback_result
+
+
+   

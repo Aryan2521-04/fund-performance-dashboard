@@ -1,5 +1,6 @@
 from datetime import date
-from backend.app.metrics import calculate_dpi, calculate_tvpi, calculate_irr, calculate_irr_with_nav
+from .metrics import calculate_dpi, calculate_tvpi, calculate_irr, calculate_irr_with_nav
+from .fund_service import compute_fund_metrics
 
 
 def get_sample_funds():
@@ -73,6 +74,8 @@ def get_sample_funds():
 # sanity check
 
 if __name__ == "__main__":
+
+    # Place holder loop, will be replaced by helper function later on
     for fund in get_sample_funds():
         distributions = sum(amount for d, amount in fund["cash_flows"] if amount > 0)
         contributions = -sum(amount for d, amount in fund["cash_flows"] if amount < 0)

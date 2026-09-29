@@ -42,8 +42,8 @@ class FundSummary(BaseModel):
     id: int
     name: str
     vintage_year: int
-    dpi: Decimal | None
-    tvpi: Decimal | None
+    dpi: float | None # changed from decimals to float for frontend react compatability
+    tvpi: float | None # same reason as above
     irr_realized: float | None # Floats should be fine here since it's a rate
     irr_since_inception: float | None 
 

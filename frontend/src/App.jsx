@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
-import { getFunds } from './api';
+import { getFundDetail, getFunds } from './api';
 import FundTable from './components/FundTable';
+import CashFlowChart from './components/CashFlowChart';
 
 
 function App() {
 
   const [funds, setFunds] = useState([]);
+  const [selectedFundId, setSelectedFundId] = useState(null);
+  const [selectedFundDetail, setSelectedFundDetail] = useState(null);
 
   useEffect(() => {
 
@@ -17,10 +20,26 @@ function App() {
 
   }, []);
 
+  useEffect(() => {
+
+    if (selectedFundId === null) {
+      return;
+    }
+
+    async function loadFundDetail() {
+      const data = await getFundDetail(selectedFundId);
+      setSelectedFundDetail(data);
+    }
+
+    loadFundDetail();
+  }, [selectedFundId]);
+
 
   return (
-    <FundTable funds={funds} />
-
+    <>
+    <FundTable funds={funds} onSelectFund={setSelectedFundId} />
+    <CashFlowChart fund={selectedFundDetail} />
+    </>
   );
 }
  

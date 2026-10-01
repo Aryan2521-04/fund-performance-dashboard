@@ -34,7 +34,7 @@ function formatPercent(value) {
 }
 
 
-export default function FundTable({ funds }) {
+export default function FundTable({ funds, onSelectFund}) {
 
     return (
 
@@ -51,7 +51,7 @@ export default function FundTable({ funds }) {
             </thead>
             <tbody>
                 {funds.map((fund) => (
-                    <tr key={fund.id}>
+                    <tr key={fund.id} onClick={() => onSelectFund(fund.id)}>
                         <td> {fund.name} </td>
                         <td> {fund.vintage_year} </td>
                         <td> {formatRatio(fund.dpi)} </td>

@@ -29,7 +29,7 @@ def list_funds(db: Session = Depends(get_db)):
         #appends that schema into results
         result.append(summary)
 
-        return result
+    return result
 
 
 

@@ -3,7 +3,7 @@ from .models import Fund
 from decimal import Decimal
 
 
-def compute_fund_metrics(fund: Fund) -> tuple[Decimal | None, Decimal | None, float | None, float | None]:
+def compute_fund_metrics(fund: Fund) -> tuple[float | None, float | None, float | None, float | None]:
 
     # Same logic as what was orignally in seed_data with the sanity check, but now there is an attributie call to cash_flows
     distributions = sum(cf.amount for cf in fund.cash_flows if cf.amount > 0)

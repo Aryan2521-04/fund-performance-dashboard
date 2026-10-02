@@ -1,6 +1,6 @@
 from datetime import date
-from .metrics import calculate_dpi, calculate_tvpi, calculate_irr, calculate_irr_with_nav
-from .fund_service import compute_fund_metrics
+from .database import SessionLocal
+from .models import Fund, CashFlowEvent, NavSnapshot
 
 
 def get_sample_funds():
@@ -71,40 +71,34 @@ def get_sample_funds():
         }
     ]
 
-# sanity check
+def seed_database():
+
+    db = SessionLocal()
+
+    # clearing existing data
+    existing_funds = db.query(Fund).all()
+    for fund in existing_funds:
+        db.delete(fund)
+    db.commit()
+
+    # seeding new data
+    for fund_dict in get_sample_funds():
+        fund = Fund(name=fund_dict["name"], vintage_year=fund_dict["vintage_year"])
+
+        for cash_flow_date, cash_flow_amount in fund_dict["cash_flows"]:
+            cash_flow = CashFlowEvent(date=cash_flow_date, amount=cash_flow_amount)
+            fund.cash_flows.append(cash_flow)
+
+        for nav_snapshot_date, nav_snapshot_value in fund_dict["nav_snapshots"]:
+            nav_snapshot = NavSnapshot(date=nav_snapshot_date, value=nav_snapshot_value)
+            fund.nav_snapshots.append(nav_snapshot)
+
+        db.add(fund)
+    db.commit()
+    db.close()
+    print("Database seeded with sample data.")
+
 
 if __name__ == "__main__":
 
-    # Place holder loop, will be replaced by helper function later on
-    for fund in get_sample_funds():
-        distributions = sum(amount for d, amount in fund["cash_flows"] if amount > 0)
-        contributions = -sum(amount for d, amount in fund["cash_flows"] if amount < 0)
-        nav = fund["nav_snapshots"][-1][1] if fund["nav_snapshots"] else 0
-        irr = calculate_irr(fund["cash_flows"]) 
-        dpi = calculate_dpi(distributions, contributions)
-        tvpi = calculate_tvpi(distributions, contributions, nav)
-        # fail check so it dosen't crash on fund IV
-        if irr is None:
-            irr_display = "N/A"
-        else:
-            irr_display = f"{irr:.2%}"
-        print(f"{fund['name']} (vintage {fund['vintage_year']}): DPI={dpi:.2f}, TVPI={tvpi:.2f}, IRR={irr_display}, IRR with NAV={calculate_irr_with_nav(fund['cash_flows'], nav, fund['nav_snapshots'][-1][0]):.2%}") 
-
-
-
-
-
-""" 
-implemented later
-def seed_database():
-    funds = [
-        {"name": "Fund I", "vintage_year": 2018},
-        {"name": "Fund II", "vintage_year": 2019},
-        {"name": "Fund III", "vintage_year": 2021},
-        {"name": "Fund IV", "vintage_year": 2023},
-
-    ]
-
-    for fund in funds:
-"""
-        
+    seed_database()

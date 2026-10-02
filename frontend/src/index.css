@@ -5,6 +5,8 @@
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
   --accent: #aa3bff;
+  --positive: #2f6846;
+  --negative: #8c3a2b;
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
@@ -38,6 +40,8 @@
     --border: #2e303a;
     --code-bg: #1f2028;
     --accent: #c084fc;
+    --positive: #6fae8c;
+    --negative: #c98b73;
     --accent-bg: rgba(192, 132, 252, 0.15);
     --accent-border: rgba(192, 132, 252, 0.5);
     --social-bg: rgba(47, 48, 58, 0.5);
@@ -108,4 +112,30 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+.positive {
+  color: var(--positive);
+}
+
+.negative {
+  color: var(--negative);
+}
+
+.numeric {
+  font-family: var(--mono);
+  text-align: right;
+}
+
+.chart-container {
+  margin-top: 32px;
+}
+
+th {
+  border-bottom: 1px solid var(--border);
+  color: var(--text-h);
+}
+
+td {
+  border-bottom: 1px solid var(--border);
 }

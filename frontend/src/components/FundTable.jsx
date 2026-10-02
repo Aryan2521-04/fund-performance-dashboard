@@ -33,6 +33,22 @@ function formatPercent(value) {
 
 }
 
+// helper function to format the IRR values with color coding
+function getIrrClass(value) {
+
+    if (value == null) {
+        return "";
+    }
+
+    if (value > 0) {
+        return "positive";
+    }
+    if (value < 0) {
+        return "negative";
+    }
+
+    return "";
+}
 
 export default function FundTable({ funds, onSelectFund}) {
 
@@ -54,10 +70,10 @@ export default function FundTable({ funds, onSelectFund}) {
                     <tr key={fund.id} onClick={() => onSelectFund(fund.id)}>
                         <td> {fund.name} </td>
                         <td> {fund.vintage_year} </td>
-                        <td> {formatRatio(fund.dpi)} </td>
-                        <td> {formatRatio(fund.tvpi)} </td>
-                        <td> {formatPercent(fund.irr_realized)} </td>
-                        <td> {formatPercent(fund.irr_since_inception)} </td>
+                        <td className="numeric"> {formatRatio(fund.dpi)} </td>
+                        <td className="numeric"> {formatRatio(fund.tvpi)} </td>
+                        <td className={`numeric ${getIrrClass(fund.irr_realized)}`}> {formatPercent(fund.irr_realized)} </td>
+                        <td className={`numeric ${getIrrClass(fund.irr_since_inception)}`}> {formatPercent(fund.irr_since_inception)} </td>
                     </tr>
                 ))}
             </tbody>

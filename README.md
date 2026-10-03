@@ -57,7 +57,6 @@ npm run dev
 
 - [ ] `models.py`: `nav_snapshots` and `cash_flows` relationships have no `order_by`, so `fund_service` grabs the last-inserted NAV instead of the
       latest-dated one
-- [ ] `seed_data.py`: never calls `Base.metadata.create_all()`, so it crashes on a fresh database
 - [ ] `CashFlowChart.jsx`: `.sort()` mutates React state in place; copy the array first (`[...cash_flows].sort(...)`)
 - [ ] `App.jsx`: fund detail fetch has a race condition when switching funds quickly; add an `ignore` cleanup flag
 

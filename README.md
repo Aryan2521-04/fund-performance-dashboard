@@ -69,7 +69,6 @@ npm run dev
 
 ### Robustness
 
-- [ ] `database.py`: SQLite path is relative, so it creates a different DB depending on where uvicorn is started; build it from `Path(__file__)`
 - [ ] Frontend has no error or loading state when the API call fails
 - [ ] `calculate_irr_with_nav` should check that the NAV date is on or after the last cash flow, so NAV isn't counted twice
 - [ ] Move the hardcoded API URL in `api.js` to `import.meta.env.VITE_API_URL`
@@ -80,7 +79,6 @@ npm run dev
       `CashFlowChart.jsx` (or use `Tooltip`)
 - [ ] Delete the duplicated metrics loop in `seed_data.py`'s `__main__` block, along with its now-unused metric imports
 - [ ] Fix typos in API error messages ("dosen't", "datbase") in `routers/funds.py`
-- [ ] Turn off `echo=True` in `database.py`, or control it with an env var
 - [ ] Add the `Session` type hint to `crud.get_funds(db)`
 - [ ] Use `selectinload` in `get_funds` to avoid N+1 queries as the number of funds grows
 - [ ] Refactor the three repeated fetch functions in `api.js` into one shared `request()` helper

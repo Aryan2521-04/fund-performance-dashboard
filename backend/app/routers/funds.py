@@ -43,7 +43,7 @@ def get_fund_detail(fund_id: int, db: Session = Depends(get_db)):
 
     # makes sure fund exists, if it dosen't raises an error
     if fund is None:
-        raise HTTPException(status_code=404, detail="Fund dosen't exist in datbase")
+        raise HTTPException(status_code=404, detail="Fund not found")
 
     # same helper function
     dpi, tvpi, irr, irr_nav = compute_fund_metrics(fund)
@@ -69,7 +69,7 @@ def create_cash_flow(fund_id: int, cash_flow: schemas.CashFlowEventCreate, db: S
 
     # same check as before
     if fund is None:
-        raise HTTPException(status_code=404, detail="Fund dosen't exist, can't create cash flow event without fund")
+        raise HTTPException(status_code=404, detail="Fund not found")
 
     # creates cash flow event
     new_cash_flow = crud.create_cash_flow_event(db, fund_id, cash_flow)

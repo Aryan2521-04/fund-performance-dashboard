@@ -14,8 +14,8 @@ class Fund(Base):
 
     # back_populates is used to define the reverse relationship in the related model, 
     # cascade="all, delete-orphan" means that when a Fund is deleted, all related CashFlow and NavSnapshot records will also be deleted
-    nav_snapshots: Mapped[List["NavSnapshot"]] = relationship("NavSnapshot", back_populates="fund", cascade="all, delete-orphan")
-    cash_flows: Mapped[List["CashFlowEvent"]] = relationship("CashFlowEvent", back_populates="fund", cascade="all, delete-orphan")
+    nav_snapshots: Mapped[List["NavSnapshot"]] = relationship("NavSnapshot", back_populates="fund", cascade="all, delete-orphan", order_by="NavSnapshot.date")
+    cash_flows: Mapped[List["CashFlowEvent"]] = relationship("CashFlowEvent", back_populates="fund", cascade="all, delete-orphan", order_by="CashFlowEvent.date")
 
 
 class CashFlowEvent(Base):

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..database import get_db
-from .. import crud, models, metrics, schemas
+from .. import crud, schemas
 from .. fund_service import compute_fund_metrics
 
 router = APIRouter()
@@ -41,7 +41,7 @@ def get_fund_detail(fund_id: int, db: Session = Depends(get_db)):
     # gets a single fund instead of all
     fund = crud.get_fund(db, fund_id)
 
-    # makes sure fund exists, if it dosen't raises an error
+    # makes sure fund exists, if it doesn't raises an error
     if fund is None:
         raise HTTPException(status_code=404, detail="Fund not found")
 

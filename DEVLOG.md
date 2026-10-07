@@ -1,4 +1,5 @@
 09/13/26:
+
 While testing seed data Fund II and III showed strongly negative IRR's despite TVPI values above 1.0 (suggesting the funds had created value overall). Investigated and confirmed this isn't a bug. It's because calculate_irr only counts realized cash flows, while TVPI includes unrealized NAV in its numerator. For a fund still holding significant unrealized value, this means IRR-as-implemented will understate true performance relative to TVPI.
 This is a known consideration in PE performance reporting: reporting a fund's "IRR since inception" while it's still active typically requires including current NAV as a terminal cash flow on the valuation date.
 Added calculate_irr_with_nav(cash_flows_with_dates, nav, nav_date) to metrics.py. It appends the latest NAV snapshot as a terminal cash flow
@@ -26,3 +27,9 @@ Additonally found another bug where there was a decimal / float division mismatc
 9/29/26:
 
 Decimal/JSON serialization issue was found while testing the main frontend page. Basically DPI and TVPI values were showing up as 0E + 2 when they should've should up as 0's. Traced it to FundSummary.dpi/tvpi being typed as Decimal | None in schemas.py. Pydantic serializes Decimal to JSON as its string representation, preserving exact precision, but Python's Decimal uses scientific notation for some values (e.g. Decimal("0") / Decimal("50000.00") produces Decimal("0E+2"), not Decimal("0")). The frontend received that string as-is and rendered it literally. Fix was simple, just changed the return type to Floar | None for DPI and TVPI.
+
+10/6/26:
+
+Wrote the API tests for all three endpoints (GET /funds, GET /funds/{id}, POST /funds/{id}/cashflows), covering the 404s and the zero-amount validator (422). Writing them turned up two bugs. The first was that the relationships had no order_by. fund_service took nav_snapshots[-1] assuming it was the latest-dated row, but it was really just the last one inserted. I wrote a test that POSTs a backdated (2017) cash flow and checks that it comes back first. My first version of the assert used [-1], which would have passed against the buggy code, because it was checking for the bug. After adding order_by="CashFlowEvent.date" and order_by="NavSnapshot.date" in models.py, the corrected test passes.
+
+The second was a stale NAV in calculate_irr_with_nav. If the NAV date is before the last cash flow, the NAV already includes value that was later paid out as a distribution, so that money gets counted twice. In my test case this turned a -38% realized IRR into +5.7%. I added a guard that falls back to realized-only IRR when nav_date < the last cash flow date, the same approach as the existing None guard. I chose a fallback over raising an error so that one bad cash flow can't make GET /funds return 500 for every fund. A NAV dated the same day as the last cash flow still counts, and I added a test for that case so the guard can't be changed to <= without a test failing.

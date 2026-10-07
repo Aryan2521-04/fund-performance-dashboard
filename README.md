@@ -66,13 +66,10 @@ npm run dev
 ### Robustness
 
 - [ ] Frontend has no error or loading state when the API call fails
-- [ ] `calculate_irr_with_nav` should check that the NAV date is on or after the last cash flow, so NAV isn't counted twice
 - [ ] Move the hardcoded API URL in `api.js` to `import.meta.env.VITE_API_URL`
 
 ### Cleanup
 
-- [ ] Remove unused imports: `models` and `metrics` in `routers/funds.py`, `Decimal` in `fund_service.py`, `CartesianGrid` and `Tooltip` in
-      `CashFlowChart.jsx` (or use `Tooltip`)
 - [ ] Delete the duplicated metrics loop in `seed_data.py`'s `__main__` block, along with its now-unused metric imports
 - [ ] Add the `Session` type hint to `crud.get_funds(db)`
 - [ ] Use `selectinload` in `get_funds` to avoid N+1 queries as the number of funds grows

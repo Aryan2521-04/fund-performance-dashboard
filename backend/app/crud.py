@@ -11,7 +11,7 @@ def get_fund(db: Session, fund_id: int) -> Fund | None:
 
 
 # Fetches all funds
-def get_funds(db) -> list[Fund]:
+def get_funds(db: Session) -> list[Fund]:
 
     return db.execute(select(Fund)).scalars().all()
 

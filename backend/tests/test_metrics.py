@@ -83,7 +83,6 @@ def test_irr_with_nav():
 
 def test_irr_with_no_nav_date():
 
-
    # Same cash flow as FUND III in seed data
    cash_flows = [
         (date(2021, 3, 1), -250000),
@@ -98,4 +97,42 @@ def test_irr_with_no_nav_date():
    assert realized_only == fallback_result
 
 
-   
+def test_irr_with_nav_date_before_last_cash_flow():
+    # same cash flow as FUND III + additional cash flow after the NAV snapshot
+    cash_flows = [
+        (date(2021, 3, 1), -250000),
+        (date(2021, 10, 1), -150000),
+        (date(2022, 6, 1), -100000),    
+        (date(2023, 11, 1), 120000), 
+        (date(2024, 1, 1), 50000),  # additional cash flow after the NAV snapshot
+    ]
+     
+    nav_snapshots = [
+        (date(2021, 12, 31), 380000),
+        (date(2022, 12, 31), 450000),
+        (date(2023, 12, 31), 400000),
+    ]
+
+    realized_only_irr = calculate_irr(cash_flows)
+    since_inception_irr = calculate_irr_with_nav(cash_flows, nav_snapshots[-1][1], nav_snapshots[-1][0])
+    
+    assert realized_only_irr == since_inception_irr
+
+
+def test_irr_with_same_day_nav():
+    cash_flows = [
+        (date(2021, 3, 1), -250000),
+        (date(2021, 10, 1), -150000),
+        (date(2022, 6, 1), -100000),
+        (date(2023, 12, 31), 120000), # additional cash flow on the same day as the NAV snapshot
+    ]
+    nav_snapshots = [
+        (date(2021, 12, 31), 380000),
+        (date(2022, 12, 31), 450000),
+        (date(2023, 12, 31), 400000),
+    ]
+
+    realized_only_irr = calculate_irr(cash_flows)
+    since_inception_irr = calculate_irr_with_nav(cash_flows, nav_snapshots[-1][1], nav_snapshots[-1][0])
+
+    assert realized_only_irr != since_inception_irr 

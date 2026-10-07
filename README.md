@@ -70,8 +70,6 @@ npm run dev
 
 ### Cleanup
 
-- [ ] Delete the duplicated metrics loop in `seed_data.py`'s `__main__` block, along with its now-unused metric imports
-- [ ] Add the `Session` type hint to `crud.get_funds(db)`
 - [ ] Use `selectinload` in `get_funds` to avoid N+1 queries as the number of funds grows
 - [ ] Refactor the three repeated fetch functions in `api.js` into one shared `request()` helper
 - [ ] Chart X axis: use a time/numeric scale so points are spaced by actual date

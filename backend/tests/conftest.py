@@ -1,6 +1,10 @@
 
 import os
+import sys
 from pathlib import Path 
+
+# Add the backend directory to Python path so 'app' module can be found
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # points DATABASE_URL to a temporary SQLite database, so tests don't affect the real database
 

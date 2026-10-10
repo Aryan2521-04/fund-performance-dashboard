@@ -2,7 +2,7 @@
 
 A full-stack app for tracking private equity / VC fund cash flows and computing standard performance metrics — IRR, TVPI, and DPI — from contribution, distribution, and NAV data.
 
-**Status:** Almost done, main functions/metrics are implemented, as is frontend and backend, focusing on cleaning up and dockeizing.
+**Status:** DONE
 
 ## Why
 
@@ -38,18 +38,38 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
+**Tests**
+
+````bash
+cd backend
+source venv/bin/activate
+pip install -r requirements-dev.txt
+python -m pytest tests/test_api.py tests/test_metrics.py
+```
+
 **Frontend**
 
 ```bash
 cd frontend
 npm install
 npm run dev
+````
+
+**With Docker**
+
+```bash
+docker compose up --build
+```
+
+**First run only**
+
+```bash
+docker compose run --rm backend python -m app.seed_data
 ```
 
 ## Roadmap
 
-- [ ] Dockerized dev environment
-- [ ] CI pipeline
+- [ ] Bug fixes
 
 ## Known Issues / TODO
 
@@ -61,12 +81,10 @@ npm run dev
 ### Testing / Infra
 
 - [ ] Add tests for `fund_service.compute_fund_metrics`
-- [ ] `ci.yml`, `docker-compose.yml` and both Dockerfiles are empty
 
 ### Robustness
 
 - [ ] Frontend has no error or loading state when the API call fails
-- [ ] Move the hardcoded API URL in `api.js` to `import.meta.env.VITE_API_URL`
 
 ### Cleanup
 
@@ -75,5 +93,4 @@ npm run dev
 - [ ] Chart X axis: use a time/numeric scale so points are spaced by actual date
 - [ ] Table rows: add a pointer cursor, a selected-row highlight and keyboard access
 - [ ] Rename `package.json` from `vite-react-starter`
-- [ ] Split `requirements.txt` into runtime and dev (`pytest`, `pyxirr`) files
 - [ ] Make `test_irr_with_nav` check against `xirr()` instead of only `>` comparisons

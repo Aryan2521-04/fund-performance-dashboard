@@ -2,15 +2,15 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 function computeCumulativeCashFlow(cash_flows) {
 
-    // sorts the cash_flow array
+    // sorts copy of array to not mutate prop/state
 
-    const sorted = cash_flows.sort((a, b) => {
+    const sorted = cash_flows.toSorted((a, b) => {
 
         const a_date = new Date(a.date);
         const b_date = new Date(b.date);
         const date_diff = a_date - b_date;
         return date_diff;
-});
+    });
 
     let runningTotal = 0;
     const cumulativeData = sorted.map((cf) => {
@@ -21,7 +21,7 @@ function computeCumulativeCashFlow(cash_flows) {
             date: cf.date,
             cumulative: runningTotal
         };
-});
+    });
 
 return cumulativeData;
 

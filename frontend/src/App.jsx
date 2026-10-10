@@ -26,13 +26,20 @@ function App() {
       return;
     }
 
+    let ignore = false;
+
     async function loadFundDetail() {
       const data = await getFundDetail(selectedFundId);
-      setSelectedFundDetail(data);
+      if (!ignore) {
+        setSelectedFundDetail(data);
+      }
     }
 
     loadFundDetail();
-  }, [selectedFundId]);
+    return () => {ignore = true};
+  },[selectedFundId]);
+
+
 
 
   return (

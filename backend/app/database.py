@@ -1,9 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from typing import Generator
+from pathlib import Path
+import os
+
+# default used when DATABASE_URL is not set
+DEFAULT_DATABASE_URL = f"sqlite:///{Path(__file__).resolve().parent.parent}/database.db"
+
+DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
 
 # Database connection
-engine = create_engine("sqlite:///./database.db", echo=True, connect_args={"check_same_thread": False})
+engine = create_engine(DATABASE_URL, echo=False, connect_args={"check_same_thread": False})
 
 # Create a base class for declarative models
 Base = declarative_base()
@@ -18,3 +25,5 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+

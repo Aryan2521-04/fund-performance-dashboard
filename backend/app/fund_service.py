@@ -1,6 +1,5 @@
 from .metrics import calculate_dpi, calculate_tvpi, calculate_irr, calculate_irr_with_nav
 from .models import Fund
-from decimal import Decimal
 
 
 def compute_fund_metrics(fund: Fund) -> tuple[float | None, float | None, float | None, float | None]:

@@ -67,12 +67,18 @@ def calculate_irr_with_nav(cash_flows_with_dates, nav, nav_date):
     nav: current net asset value of the fund
     nav_date: date of the NAV snapshot
     falls back to realized only irr if nav date is empty
+    or if nav date is before the last cash flow date
     """
 
     if nav_date is None:
         return calculate_irr(cash_flows_with_dates)
-
+    
+    if cash_flows_with_dates and nav_date < cash_flows_with_dates[-1][0]:
+        # If the NAV date is before the last cash flow, we ignore the NAV and calculate IRR based on realized cash flows only
+        return calculate_irr(cash_flows_with_dates)
 
     augmented_cash_flows = cash_flows_with_dates + [(nav_date, nav)]
     augmented_cash_flows.sort()
     return calculate_irr(augmented_cash_flows)
+
+

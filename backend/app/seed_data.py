@@ -1,6 +1,7 @@
 from datetime import date
-from .database import SessionLocal
+from .database import SessionLocal, Base, engine
 from .models import Fund, CashFlowEvent, NavSnapshot
+
 
 
 def get_sample_funds():
@@ -72,6 +73,10 @@ def get_sample_funds():
     ]
 
 def seed_database():
+
+    
+    # calls base data so it dosen't crash on a fresh database
+    Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
 

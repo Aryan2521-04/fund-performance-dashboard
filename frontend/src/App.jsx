@@ -9,12 +9,24 @@ function App() {
   const [funds, setFunds] = useState([]);
   const [selectedFundId, setSelectedFundId] = useState(null);
   const [selectedFundDetail, setSelectedFundDetail] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [detailError, setDetailError] = useState(null);
 
   useEffect(() => {
 
     async function loadFunds() {
-      const data  = await getFunds();
-      setFunds(data); 
+      try {
+        const data  = await getFunds();
+        setFunds(data); 
+      }
+      catch (err) {
+        setError(`Page failed to load: ${err.message}`);
+
+      }
+      finally {
+        setLoading(false);
+      }
     }
     loadFunds();
 
@@ -29,9 +41,17 @@ function App() {
     let ignore = false;
 
     async function loadFundDetail() {
-      const data = await getFundDetail(selectedFundId);
-      if (!ignore) {
-        setSelectedFundDetail(data);
+      try {
+        setDetailError(null);
+        const data = await getFundDetail(selectedFundId);
+        if (!ignore) {
+          setSelectedFundDetail(data);
+        }
+      }
+      catch (err) {
+        if (!ignore) {
+          setDetailError(`Error: ${err.message}`);
+        }
       }
     }
 
@@ -39,13 +59,19 @@ function App() {
     return () => {ignore = true};
   },[selectedFundId]);
 
+  if (error) {
+    return <p>Page has an error, {error}</p>
+  }
 
+  if (loading) {
+    return <p>Page is loading . . .</p>
+  }
 
 
   return (
     <>
     <FundTable funds={funds} onSelectFund={setSelectedFundId} />
-    <CashFlowChart fund={selectedFundDetail} />
+    {detailError ? <p>{detailError}</p> : <CashFlowChart fund={selectedFundDetail}/>}
     </>
   );
 }

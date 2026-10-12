@@ -73,18 +73,9 @@ docker compose run --rm backend python -m app.seed_data
 
 ## Known Issues / TODO
 
-### Bugs
-
-- [ ] `CashFlowChart.jsx`: `.sort()` mutates React state in place; copy the array first (`[...cash_flows].sort(...)`)
-- [ ] `App.jsx`: fund detail fetch has a race condition when switching funds quickly; add an `ignore` cleanup flag
-
 ### Testing / Infra
 
 - [ ] Add tests for `fund_service.compute_fund_metrics`
-
-### Robustness
-
-- [ ] Frontend has no error or loading state when the API call fails
 
 ### Cleanup
 

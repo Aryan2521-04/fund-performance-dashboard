@@ -1,50 +1,68 @@
-# Fund Performance Dashboard
+# HarborVest: Fund Performance Dashboard
 
-A full-stack app for tracking private equity / VC fund cash flows and computing standard performance metrics — IRR, TVPI, and DPI — from contribution, distribution, and NAV data.
+A full-stack app for tracking private equity / VC fund cash flows and computing standard performance metrics (IRR, TVPI and DPI) from contribution, distribution and NAV data.
 
-**Status:** DONE
+![HarborVest dashboard](docs/screenshot.png)
 
 ## Why
 
-Fund performance is usually reported through opaque spreadsheets. This project models the underlying cash-flow math directly — including a hand-rolled XIRR solver (Newton/Brent's method over irregular real dates, not just evenly-spaced periods) — and exposes it through a simple API and dashboard.
+Fund performance is usually reported through opaque spreadsheets. This project models the underlying cash-flow math directly and exposes it through a REST API and a dashboard. IRR is computed XIRR-style: a custom XNPV function over the actual cash flow dates (not evenly spaced periods), solved with SciPy's Brent root finder and checked against `pyxirr` in the tests.
+
+## Features
+
+- **Fund table:** DPI, TVPI, realized IRR and since-inception IRR for every fund
+- **Fund detail:** metric cards plus a chart of cumulative net cash flow against NAV over time (the classic PE "J-curve")
+- **Two IRRs:** realized-only IRR, and since-inception IRR that treats the latest NAV as a terminal cash flow
+- **Safe fallbacks:** if a NAV is missing or older than the last cash flow, since-inception IRR falls back to realized IRR instead of double-counting value or crashing the API
+- **REST API:** `GET /funds`, `GET /funds/{id}`, `POST /funds/{id}/cashflows` with validation (interactive docs at `/docs`)
 
 ## Tech Stack
 
-- **Backend:** FastAPI, SQLAlchemy, Pydantic, pytest
-- **Frontend:** React + Vite
-- **Infra:** Docker, GitHub Actions (CI)
+- **Backend:** FastAPI, SQLAlchemy 2.0, Pydantic, SciPy, SQLite
+- **Frontend:** React, Vite, Recharts
+- **Testing / Infra:** pytest, Docker Compose (nginx-served frontend), GitHub Actions CI
 
 ## Metrics
 
-- **IRR** — annualized internal rate of return, computed from actual cash flow dates (not assumed regular periods)
-- **TVPI** — Total Value to Paid-In: `(distributions + NAV) / contributions`
-- **DPI** — Distributions to Paid-In: `distributions / contributions`
+- **IRR:** annualized internal rate of return, computed from actual cash flow dates
+- **TVPI:** Total Value to Paid-In, `(distributions + NAV) / contributions`
+- **DPI:** Distributions to Paid-In, `distributions / contributions`
 
 ## Project Structure
 
 ```
-backend/    FastAPI app: models, schemas, CRUD, metrics engine, API routes
-frontend/   React + Vite dashboard
+backend/
+  app/
+    metrics.py        pure math: DPI, TVPI, IRR, IRR with NAV
+    fund_service.py   turns ORM rows into metrics
+    models.py         Fund, CashFlowEvent, NavSnapshot
+    routers/funds.py  API routes
+  tests/              metric unit tests + API tests
+frontend/
+  src/
+    components/       FundTable, CashFlowChart
 ```
 
 ## Running Locally
+
+**With Docker (easiest)**
+
+```bash
+docker compose up --build
+docker compose run --rm backend python -m app.seed_data   # first run only
+```
+
+Open http://localhost:5173. API docs are at http://localhost:8000/docs.
 
 **Backend**
 
 ```bash
 cd backend
+python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+python -m app.seed_data   # first run only
 uvicorn app.main:app --reload
-```
-
-**Tests**
-
-````bash
-cd backend
-source venv/bin/activate
-pip install -r requirements-dev.txt
-python -m pytest tests/test_api.py tests/test_metrics.py
 ```
 
 **Frontend**
@@ -53,44 +71,30 @@ python -m pytest tests/test_api.py tests/test_metrics.py
 cd frontend
 npm install
 npm run dev
-````
-
-**With Docker**
-
-```bash
-docker compose up --build
 ```
 
-**First run only**
+**Tests**
 
 ```bash
-docker compose run --rm backend python -m app.seed_data
+cd backend
+source venv/bin/activate
+pip install -r requirements-dev.txt
+python -m pytest
 ```
+
+## Dev Log
+
+[DEVLOG.md](DEVLOG.md) records the design decisions and bugs found along the way, including why realized IRR and TVPI can disagree, a stale-NAV double-counting bug, and a Decimal serialization issue that showed up as `0E+2` in the UI.
+
+## Built With AI Assistance
+
+I wrote the backend, metrics engine, tests, Docker setup and CI, plus the original React frontend. Throughout the build I used [Claude](https://claude.ai) (Anthropic) as a tutor and code reviewer: I asked it to review my code, explain concepts and point out bugs, then wrote the fixes myself. The final UI polish (styling, metric cards, the cash flow vs. NAV chart) and the README rewrite were done with Claude Code. The design decisions and debugging in [DEVLOG.md](DEVLOG.md) are my own.
 
 ## Roadmap
 
-- [ ] Bug fixes
-
-## Known Issues / TODO
-
-### Bugs
-
-- [ ] `CashFlowChart.jsx`: `.sort()` mutates React state in place; copy the array first (`[...cash_flows].sort(...)`)
-- [ ] `App.jsx`: fund detail fetch has a race condition when switching funds quickly; add an `ignore` cleanup flag
-
-### Testing / Infra
-
 - [ ] Add tests for `fund_service.compute_fund_metrics`
-
-### Robustness
-
-- [ ] Frontend has no error or loading state when the API call fails
-
-### Cleanup
-
 - [ ] Use `selectinload` in `get_funds` to avoid N+1 queries as the number of funds grows
 - [ ] Refactor the three repeated fetch functions in `api.js` into one shared `request()` helper
-- [ ] Chart X axis: use a time/numeric scale so points are spaced by actual date
-- [ ] Table rows: add a pointer cursor, a selected-row highlight and keyboard access
-- [ ] Rename `package.json` from `vite-react-starter`
 - [ ] Make `test_irr_with_nav` check against `xirr()` instead of only `>` comparisons
+- [ ] Form in the UI for adding cash flows (the API endpoint already exists)
+- [ ] Deploy a live demo

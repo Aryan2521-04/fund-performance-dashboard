@@ -1,8 +1,8 @@
-# HarborVest: Fund Performance Dashboard
+# Fund Performance Dashboard
 
 A full-stack app for tracking private equity / VC fund cash flows and computing standard performance metrics (IRR, TVPI and DPI) from contribution, distribution and NAV data.
 
-![HarborVest dashboard](docs/screenshot.png)
+![Fund Performance Dashboard](docs/screenshot.png)
 
 ## Why
 

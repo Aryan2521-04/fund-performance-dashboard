@@ -71,7 +71,7 @@ function App() {
       <div className="brand">
         <img src="/favicon.svg" alt="" width="36" height="36" />
         <div>
-          <h1>HarborVest</h1>
+          <h1>Fund Performance Dashboard</h1>
           <p>Private fund performance from dated cash flows: IRR, TVPI and DPI</p>
         </div>
       </div>
